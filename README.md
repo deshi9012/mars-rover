@@ -1,5 +1,5 @@
 
-## Landing Rover Task
+# Landing Rover Task
 ###1. Pull the repository
 ###2. Execute `composer install`
 ###3. Enter `php artisan landing:start` to start Landing mission.
