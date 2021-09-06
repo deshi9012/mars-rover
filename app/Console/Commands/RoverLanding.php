@@ -2,8 +2,8 @@
 
 namespace App\Console\Commands;
 
-use App\Constants\Common\InitialLandingInformation;
 use Illuminate\Console\Command;
+use App\Constants\Common\InitialLandingInformation;
 use App\Exceptions\GridMapException;
 use App\Exceptions\RoverException;
 use App\Services\Landing\LandingService;

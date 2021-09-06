@@ -2,11 +2,11 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Model;
 use App\Constants\Common\CardinalDirections;
 use App\Constants\Rover\RoverCommonConstants;
 use App\Exceptions\RoverException;
 use App\Traits\AxesTrait;
-use Illuminate\Database\Eloquent\Model;
 
 class Rover extends Model
 {

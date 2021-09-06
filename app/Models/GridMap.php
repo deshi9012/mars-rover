@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Model;
 use App\Constants\GridMap\GridMapCommonConstants;
 use App\Exceptions\GridMapException;
-use Illuminate\Database\Eloquent\Model;
 
 class GridMap extends Model
 {
@@ -25,7 +25,6 @@ class GridMap extends Model
     {
         return [$this->xAxisLength, $this->yAxisLength];
     }
-
 
     /**
      * @param string $gridData
