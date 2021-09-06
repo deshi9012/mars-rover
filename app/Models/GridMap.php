@@ -2,34 +2,46 @@
 
 namespace App\Models;
 
+use App\Constants\GridMap\GridMapCommonConstants;
+use App\Exceptions\GridMapException;
 use Illuminate\Database\Eloquent\Model;
-use Exception;
 
 class GridMap extends Model
 {
+    /**
+     * @var
+     */
     private $xAxisLength;
+
+    /**
+     * @var
+     */
     private $yAxisLength;
 
-    public function getCoordinates():array
+    /**
+     * @return array
+     */
+    public function getCoordinates(): array
     {
         return [$this->xAxisLength, $this->yAxisLength];
     }
 
+
     /**
-     * @throws Exception
+     * @param string $gridData
+     * @throws GridMapException
      */
-    public function setAxesLength(string $gridData):void
+    public function setAxesLength(string $gridData): void
     {
-        $gridCoordinates = explode('x', $gridData);
-        if (count($gridCoordinates) != 2) {
-            throw new Exception('Invalid grid data!');
+        $gridCoordinates = explode(GridMapCommonConstants::AXES_DELIMITER, $gridData);
+        if (count($gridCoordinates) != GridMapCommonConstants::AXES_COUNT) {
+            throw GridMapException::invalidAxesCount();
         }
 
         if (!is_numeric($gridCoordinates[0]) || !is_numeric($gridCoordinates[1])) {
-            throw new Exception('Invalid grid data!');
+            throw GridMapException::invalidAxesValuesTypeEntered($gridCoordinates);
         }
 
-        $this->xAxisLength = $gridCoordinates[0];
-        $this->yAxisLength = $gridCoordinates[1];
+        [$this->xAxisLength, $this->yAxisLength] = $gridCoordinates;
     }
 }

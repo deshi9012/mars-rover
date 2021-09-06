@@ -2,19 +2,22 @@
 
 namespace App\Console\Commands;
 
-use App\Services\RoverMover\RoverMoverService;
+use App\Constants\Common\InitialLandingInformation;
 use Illuminate\Console\Command;
+use App\Exceptions\GridMapException;
+use App\Exceptions\RoverException;
+use App\Services\Landing\LandingService;
 use App\Models\GridMap;
 use App\Models\Rover;
 
-class NavigateRover extends Command
+class RoverLanding extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'navigation:start';
+    protected $signature = 'landing:start';
 
     /**
      * The console command description.
@@ -33,29 +36,28 @@ class NavigateRover extends Command
         parent::__construct();
     }
 
+
     /**
-     * Execute the console command.
-     *
-     * @return void
-     * @throws \Exception
+     * @throws GridMapException
+     * @throws RoverException
      */
-    public function handle():void
+    public function handle(): void
     {
-        $gridData = $this->ask('Enter grid size. Eg. 5x5');
+        $gridMapSize = $this->ask(InitialLandingInformation::ENTER_GRID_MAP_SIZE);
 
         $grid = new GridMap();
-        $grid->setAxesLength($gridData);
+        $grid->setAxesLength($gridMapSize);
 
-        $roverCoordinates = $this->ask('Enter rover coordinates. (Eg. 1x2)');
-        $roverDirection = $this->ask('Enter rover direction. (N for North, W for West, S for South and E for East)');
+        $roverCoordinates = $this->ask(InitialLandingInformation::ENTER_ROVER_COORDINATES);
+        $roverDirection = $this->ask(InitialLandingInformation::ENTER_ROVER_DIRECTION);
 
         $roverModel = new Rover();
         $roverModel->setCoordinates($roverCoordinates);
         $roverModel->setDirection($roverDirection);
 
-        $roverNavigationCommands = $this->ask('Enter moving commands. (Eg. LMLMLMLMM)');
+        $roverNavigationCommands = $this->ask(InitialLandingInformation::ENTER_ROVER_MOVING_COMMANDS);
 
-        $landingMission = new RoverMoverService($roverModel, $grid);
+        $landingMission = new LandingService($roverModel, $grid);
 
         $landingMission->executeCommands($roverNavigationCommands);
 

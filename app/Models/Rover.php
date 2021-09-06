@@ -2,60 +2,92 @@
 
 namespace App\Models;
 
+use App\Constants\Common\CardinalDirections;
+use App\Constants\Rover\RoverCommonConstants;
+use App\Exceptions\RoverException;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\GridMap;
-use Exception;
 
 class Rover extends Model
 {
+
+    /**
+     * @var
+     */
     private $xAxisCoordinates;
+
+    /**
+     * @var
+     */
     private $yAxisCoordinates;
+
+    /**
+     * @var
+     */
     private $direction;
 
-    public function getCoordinates (): array
-    {
-        return [$this->xAxisCoordinates,$this->yAxisCoordinates];
-    }
 
-    public function setXAxisCoordinate(int $newCoordinates):int
+    /**
+     * @return array
+     */
+    public function getCoordinates(): array
     {
-        return $this->xAxisCoordinates = $newCoordinates;
-    }
-
-    public function setYAxisCoordinate(int $newCoordinates):int
-    {
-        return $this->yAxisCoordinates = $newCoordinates;
+        return [$this->xAxisCoordinates, $this->yAxisCoordinates];
     }
 
     /**
-     * @throws Exception
+     * @param int $newXCoordinates
+     * @return int
      */
-    public function setCoordinates(string $roverCoordinatesData):array
+    public function setXAxisCoordinate(int $newXCoordinates): int
     {
-        $roverCoordinates = explode('x', $roverCoordinatesData);
-        if (count($roverCoordinates) != 2) {
-            throw new Exception('Invalid rover coordinates data!');
+        return $this->xAxisCoordinates = $newXCoordinates;
+    }
+
+    /**
+     * @param int $newYCoordinates
+     * @return int
+     */
+    public function setYAxisCoordinate(int $newYCoordinates): int
+    {
+        return $this->yAxisCoordinates = $newYCoordinates;
+    }
+
+    /**
+     * @param string $roverCoordinatesData
+     * @return array
+     * @throws RoverException
+     */
+    public function setCoordinates(string $roverCoordinatesData): array
+    {
+        $roverCoordinates = explode(RoverCommonConstants::AXES_DELIMITER, $roverCoordinatesData);
+        if (count($roverCoordinates) != RoverCommonConstants::AXES_COUNT) {
+            throw RoverException::axesCount();
         }
 
         if (!is_numeric($roverCoordinates[0]) || !is_numeric($roverCoordinates[1])) {
-            throw new Exception('Invalid rover coordinates data!');
+            throw RoverException::invalidAxesValuesTypeEntered($roverCoordinates);
         }
 
-        return [$this->xAxisCoordinates,$this->yAxisCoordinates] = $roverCoordinates;
+        return [$this->xAxisCoordinates, $this->yAxisCoordinates] = $roverCoordinates;
     }
 
+
     /**
-     * @throws Exception
+     * @param string $direction
+     * @throws RoverException
      */
-    public function setDirection(string $direction) : void
+    public function setDirection(string $direction): void
     {
-        if (!in_array($direction, ['N', 'E', 'S', 'W'])) {
-            throw new Exception('Invalid rover direction: ' .  $direction);
+        if (!in_array($direction, CardinalDirections::AS_ARRAY)) {
+            throw RoverException::invalidDirection($direction);
         }
         $this->direction = $direction;
     }
 
-    public function getDirection() : string
+    /**
+     * @return string
+     */
+    public function getDirection(): string
     {
         return $this->direction;
     }
