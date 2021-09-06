@@ -8,32 +8,29 @@ use Exception;
 
 class Rover extends Model
 {
-    private $gridMap;
     private $xAxisCoordinates;
     private $yAxisCoordinates;
-    private $roverDirection;
+    private $direction;
 
-    public function __construct(GridMap $gridMap)
+    public function getCoordinates (): array
     {
-        $this->gridMap = $gridMap;
+        return [$this->xAxisCoordinates,$this->yAxisCoordinates];
     }
 
-    public function getXAxisCoordinates()
+    public function setXAxisCoordinate(int $newCoordinates):int
     {
-        return $this->xAxisCoordinates;
+        return $this->xAxisCoordinates = $newCoordinates;
     }
 
-    public function getYAxisCoordinates()
+    public function setYAxisCoordinate(int $newCoordinates):int
     {
-        return $this->yAxisCoordinates;
+        return $this->yAxisCoordinates = $newCoordinates;
     }
 
-    public function getCoordinatesAndHeadingDirection()
-    {
-        return $this->xAxisCoordinates . 'x' . $this->yAxisCoordinates . ' ' . $this->roverDirection;
-    }
-
-    public function setCoordinates(string $roverCoordinatesData)
+    /**
+     * @throws Exception
+     */
+    public function setCoordinates(string $roverCoordinatesData):array
     {
         $roverCoordinates = explode('x', $roverCoordinatesData);
         if (count($roverCoordinates) != 2) {
@@ -44,113 +41,22 @@ class Rover extends Model
             throw new Exception('Invalid rover coordinates data!');
         }
 
-
-        $this->xAxisCoordinates = $roverCoordinates[0];
-        $this->yAxisCoordinates = $roverCoordinates[1];
+        return [$this->xAxisCoordinates,$this->yAxisCoordinates] = $roverCoordinates;
     }
 
-    public function setRoverDirection(string $roverDirection) : void
+    /**
+     * @throws Exception
+     */
+    public function setDirection(string $direction) : void
     {
-        if (!in_array($roverDirection, ['N', 'E', 'S', 'W'])) {
-            throw new Exception('Invalid rover direction: ' .  $roverDirection);
+        if (!in_array($direction, ['N', 'E', 'S', 'W'])) {
+            throw new Exception('Invalid rover direction: ' .  $direction);
         }
-        $this->roverDirection = $roverDirection;
+        $this->direction = $direction;
     }
 
-    public function executeCommands($commands)
+    public function getDirection() : string
     {
-        $separatedCommands = str_split($commands);
-        foreach ($separatedCommands as $command) {
-            switch ($command) {
-                case 'M':
-                    $this->moveForward();
-                    break;
-                case 'L':
-                case 'R':
-                    $this->spinRoadster($command);
-                    break;
-                default:
-                    throw new Exception('Invalid command: ' .  $command);
-                }
-        }
-    }
-
-    private function moveForward()
-    {
-        if ($this->isRoverReachGridLimits()) {
-            throw new Exception('You reached limits of the field !');
-        }
-
-        switch ($this->roverDirection) {
-            case "N":
-                $this->yAxisCoordinates++;
-                break;
-            case "E":
-                $this->xAxisCoordinates++;
-                break;
-            case "S":
-                $this->yAxisCoordinates--;
-                break;
-
-            case "W":
-                $this->xAxisCoordinates--;
-                break;
-            default:
-                throw new Exception('Invalid direction');
-        }
-    }
-
-    private function leftTurn()
-    {
-        switch ($this->roverDirection) {
-            case "N":
-                $this->roverDirection = "W";
-                break;
-            case "W":
-                $this->roverDirection = "S";
-                break;
-            case "S":
-                $this->roverDirection = "E";
-                break;
-            case "E":
-                $this->roverDirection = "N";
-                break;
-            default:
-                throw new Exception('Invalid direction: ' . $this->roverDirection);
-        }
-    }
-
-    private function rightTurn()
-    {
-        switch ($this->roverDirection) {
-            case "N":
-                $this->roverDirection = "E";
-                break;
-            case "E":
-                $this->roverDirection = "S";
-                break;
-            case "S":
-                $this->roverDirection = "W";
-                break;
-            case "W":
-                $this->roverDirection = "N";
-                break;
-            default:
-                throw new Exception('Invalid direction:' . $this->roverDirection);
-        }
-    }
-
-    private function spinRoadster($roverDirection)
-    {
-        if ($roverDirection == "L") {
-            $this->leftTurn() ;
-        } else {
-            $this->rightTurn();
-        }
-    }
-
-    private function isRoverReachGridLimits() : bool
-    {
-        return ($this->xAxisCoordinates < 0 || $this->xAxisCoordinates > $this->gridMap->getXAxis() || $this->yAxisCoordinates < 0 || $this->yAxisCoordinates > $this->gridMap->getYAxis());
+        return $this->direction;
     }
 }

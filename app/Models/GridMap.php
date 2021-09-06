@@ -7,20 +7,18 @@ use Exception;
 
 class GridMap extends Model
 {
-    private $xAxis;
-    private $yAxis;
+    private $xAxisLength;
+    private $yAxisLength;
 
-    public function getXAxis():int
+    public function getCoordinates():array
     {
-        return $this->xAxis;
+        return [$this->xAxisLength, $this->yAxisLength];
     }
 
-    public function getYAxis():int
-    {
-        return $this->yAxis;
-    }
-
-    public function setAxisesData(string $gridData):void
+    /**
+     * @throws Exception
+     */
+    public function setAxesLength(string $gridData):void
     {
         $gridCoordinates = explode('x', $gridData);
         if (count($gridCoordinates) != 2) {
@@ -31,8 +29,7 @@ class GridMap extends Model
             throw new Exception('Invalid grid data!');
         }
 
-
-        $this->xAxis = $gridCoordinates[0];
-        $this->yAxis = $gridCoordinates[1];
+        $this->xAxisLength = $gridCoordinates[0];
+        $this->yAxisLength = $gridCoordinates[1];
     }
 }

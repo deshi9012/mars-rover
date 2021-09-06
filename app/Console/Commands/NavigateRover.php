@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Services\RoverMover\RoverMoverService;
 use Illuminate\Console\Command;
 use App\Models\GridMap;
 use App\Models\Rover;
@@ -35,26 +36,29 @@ class NavigateRover extends Command
     /**
      * Execute the console command.
      *
-     * @return int
+     * @return void
+     * @throws \Exception
      */
-    public function handle()
+    public function handle():void
     {
         $gridData = $this->ask('Enter grid size. Eg. 5x5');
 
         $grid = new GridMap();
-        $grid->setAxisesData($gridData);
+        $grid->setAxesLength($gridData);
 
         $roverCoordinates = $this->ask('Enter rover coordinates. (Eg. 1x2)');
         $roverDirection = $this->ask('Enter rover direction. (N for North, W for West, S for South and E for East)');
 
-        $roverModel = new Rover($grid);
+        $roverModel = new Rover();
         $roverModel->setCoordinates($roverCoordinates);
-        $roverModel->setRoverDirection($roverDirection);
+        $roverModel->setDirection($roverDirection);
 
         $roverNavigationCommands = $this->ask('Enter moving commands. (Eg. LMLMLMLMM)');
 
-        $roverModel->executeCommands($roverNavigationCommands);
+        $landingMission = new RoverMoverService($roverModel, $grid);
 
-        $this->info($roverModel->getCoordinatesAndHeadingDirection());
+        $landingMission->executeCommands($roverNavigationCommands);
+
+        $this->info($landingMission->getFinalCoordinatesAndDirection());
     }
 }
