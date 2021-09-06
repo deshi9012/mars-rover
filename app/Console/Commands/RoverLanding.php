@@ -36,7 +36,6 @@ class RoverLanding extends Command
         parent::__construct();
     }
 
-
     /**
      * @throws GridMapException
      * @throws RoverException
@@ -46,19 +45,19 @@ class RoverLanding extends Command
         $gridMapSize = $this->ask(InitialLandingInformation::ENTER_GRID_MAP_SIZE);
 
         $grid = new GridMap();
-        $grid->setAxesLength($gridMapSize);
+        $grid->setAxesLengths($gridMapSize);
+        $roverLimitations = $grid->getAxesLengths();
 
         $roverCoordinates = $this->ask(InitialLandingInformation::ENTER_ROVER_COORDINATES);
-        $roverDirection = $this->ask(InitialLandingInformation::ENTER_ROVER_DIRECTION);
-
-        $roverModel = new Rover();
+        $roverModel = new Rover($roverLimitations);
         $roverModel->setCoordinates($roverCoordinates);
+
+        $roverDirection = $this->ask(InitialLandingInformation::ENTER_ROVER_DIRECTION);
         $roverModel->setDirection($roverDirection);
 
         $roverNavigationCommands = $this->ask(InitialLandingInformation::ENTER_ROVER_MOVING_COMMANDS);
 
-        $landingMission = new LandingService($roverModel, $grid);
-
+        $landingMission = new LandingService($roverModel);
         $landingMission->executeCommands($roverNavigationCommands);
 
         $this->info($landingMission->getFinalCoordinatesAndDirection());

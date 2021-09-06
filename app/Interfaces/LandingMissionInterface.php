@@ -12,7 +12,5 @@ interface LandingMissionInterface
 
     public function rotateRover(string $roverDirection): void;
 
-    public function isRoverReachGridLimits(): bool;
-
     public function executeCommands(string $commands): void;
 }

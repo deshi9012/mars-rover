@@ -21,7 +21,7 @@ class GridMap extends Model
     /**
      * @return array
      */
-    public function getCoordinates(): array
+    public function getAxesLengths(): array
     {
         return [$this->xAxisLength, $this->yAxisLength];
     }
@@ -31,7 +31,7 @@ class GridMap extends Model
      * @param string $gridData
      * @throws GridMapException
      */
-    public function setAxesLength(string $gridData): void
+    public function setAxesLengths(string $gridData): void
     {
         $gridCoordinates = explode(GridMapCommonConstants::AXES_DELIMITER, $gridData);
         if (count($gridCoordinates) != GridMapCommonConstants::AXES_COUNT) {

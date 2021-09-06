@@ -8,10 +8,12 @@ use App\Constants\Rover\RoverRotationCommands;
 use App\Exceptions\RoverException;
 use App\Interfaces\LandingMissionInterface;
 use App\Models\Rover;
-use App\Models\GridMap;
+use App\Traits\AxesTrait;
 
 class LandingService implements LandingMissionInterface
 {
+
+    use AxesTrait;
 
     /**
      * @var Rover
@@ -19,18 +21,11 @@ class LandingService implements LandingMissionInterface
     private $rover;
 
     /**
-     * @var GridMap
-     */
-    private $gridMap;
-
-    /**
      * @param Rover $rover
-     * @param GridMap $gridMap
      */
-    public function __construct(Rover $rover, GridMap $gridMap)
+    public function __construct(Rover $rover)
     {
         $this->rover = $rover;
-        $this->gridMap = $gridMap;
     }
 
     /**
@@ -38,9 +33,6 @@ class LandingService implements LandingMissionInterface
      */
     public function moveForward(): void
     {
-        if ($this->isRoverReachGridLimits()) {
-            throw RoverException::outOfGridMap();
-        }
         $roverDirection = $this->rover->getDirection();
         [$roverXCoordinates, $roverYCoordinates] = $this->rover->getCoordinates();
 
@@ -122,20 +114,6 @@ class LandingService implements LandingMissionInterface
         } else {
             $this->rotateRight();
         }
-    }
-
-    /**
-     * @return bool
-     */
-    public function isRoverReachGridLimits(): bool
-    {
-        [$roverXCoordinates, $roverYCoordinates] = $this->rover->getCoordinates();
-        [$gridMapXAxesLength, $gridMapYAxesLength] = $this->gridMap->getCoordinates();
-
-        $isRoverOutOfXAxes = $roverXCoordinates < 0 || $roverXCoordinates > $gridMapXAxesLength;
-        $isRoverOutOfYAxes = $roverYCoordinates < 0 || $roverYCoordinates > $gridMapYAxesLength;
-
-        return ($isRoverOutOfXAxes || $isRoverOutOfYAxes);
     }
 
     /**
